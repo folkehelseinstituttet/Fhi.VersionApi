@@ -8,12 +8,12 @@ namespace VersionApi.Controllers
     public class VersionApiControllers : ControllerBase
     {
         static string filename = "versionApiFile.json";
-        static Dictionary<string, VersionDTO> information;
+        static Dictionary<string, VersionDTO> information = new();
 
-        static VersionApiControllers()
-        {
-            information = ReadDictonary();
-        }
+        //static VersionApiControllers()
+        //{
+        //    information = ReadDictonary();
+        //}
 
         private static Dictionary<string, VersionDTO> ReadDictonary()
         {
@@ -79,7 +79,7 @@ namespace VersionApi.Controllers
                 information[key] = dto;
             }
 
-            UploadInformation();
+            // UploadInformation();
         }
 
         [HttpGet("DeleteInformation")]
