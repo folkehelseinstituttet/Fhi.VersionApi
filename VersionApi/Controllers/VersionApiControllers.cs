@@ -4,30 +4,33 @@ using Newtonsoft.Json;
 namespace VersionApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api")]
     public class VersionApiControllers : ControllerBase
     {
-        static string filename = "versionApiFile.json";
-        static Dictionary<string, VersionDTO> information = new();
+        static readonly Dictionary<string, VersionDTO> information;
+        private static string path = "";
 
-        //static VersionApiControllers()
-        //{
-        //    information = ReadDictonary();
-        //}
+        static VersionApiControllers()
+        {
+            information = ReadDictonary();
+        }
 
         private static Dictionary<string, VersionDTO> ReadDictonary()
         {
-            if (!System.IO.File.Exists(filename))
+            const string filename = "versionApiFile.json";
+            var folder = Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData);
+            path = Path.Combine(folder, filename);
+            if (!System.IO.File.Exists(path))
             {
                 return new Dictionary<string, VersionDTO>();
 
             }
 
-            string allText = System.IO.File.ReadAllText(filename);
+            string allText = System.IO.File.ReadAllText(path);
             var versionApiDict = JsonConvert.DeserializeObject<Dictionary<string, VersionDTO>>(allText);
 
             return versionApiDict!;
-       
+
         }
 
         private string CreateKey(string enviroment, string system, string component) => $"{enviroment}.{system}.{component}";
@@ -37,14 +40,14 @@ namespace VersionApi.Controllers
         public void UploadInformation()
         {
             string jsonString = JsonConvert.SerializeObject(information, Formatting.Indented);
-            System.IO.File.WriteAllText(filename, jsonString);
+            System.IO.File.WriteAllText(path, jsonString);
         }
 
         [HttpGet("GetInformation")]
         public ActionResult<ShieldsIo> GetInformation(string enviroment, string system, string component)
         {
             var dtoFound = information.TryGetValue(CreateKey(enviroment, system, component), out var dto);
-           
+
             if (dtoFound == false)
             {
                 return Ok(new ShieldsIo("Version", "Not Found"));
@@ -79,7 +82,7 @@ namespace VersionApi.Controllers
                 information[key] = dto;
             }
 
-            // UploadInformation();
+            UploadInformation();
         }
 
         [HttpGet("DeleteInformation")]
@@ -100,13 +103,13 @@ namespace VersionApi.Controllers
         [HttpGet("DeleteAllInformation")]
         public void DeleteAllInformation()
         {
-            information.Clear();            
+            information.Clear();
         }
 
         [HttpGet("Status")]
         public IActionResult StatusImage(int num)
         {
-            Byte[] image = null;
+            byte[] image = Array.Empty<byte>();
             if (num == 0)
             {
                 image = System.IO.File.ReadAllBytes("images/reddot.png");
@@ -124,13 +127,13 @@ namespace VersionApi.Controllers
                 image = System.IO.File.ReadAllBytes("images/orangedot.png");
             }
 
-            if (image != null)
+            if (image.Length > 0)
             {
                 return File(image, "image/jpeg");
             }
             else
             {
-                return null;
+                return BadRequest();
             }
         }
     }
