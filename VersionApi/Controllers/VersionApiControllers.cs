@@ -102,6 +102,37 @@ namespace VersionApi.Controllers
         {
             information.Clear();            
         }
+
+        [HttpGet("Status")]
+        public IActionResult StatusImage(int num)
+        {
+            Byte[] image = null;
+            if (num == 0)
+            {
+                image = System.IO.File.ReadAllBytes("images/reddot.png");
+            }
+            if (num == 1)
+            {
+                image = System.IO.File.ReadAllBytes("images/greendot.png");
+            }
+            if (num == 2)
+            {
+                image = System.IO.File.ReadAllBytes("images/yellowdot.png");
+            }
+            if (num == 3)
+            {
+                image = System.IO.File.ReadAllBytes("images/orangedot.png");
+            }
+
+            if (image != null)
+            {
+                return File(image, "image/jpeg");
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 
     /// <summary>
