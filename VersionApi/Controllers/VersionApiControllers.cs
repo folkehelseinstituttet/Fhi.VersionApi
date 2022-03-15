@@ -60,14 +60,15 @@ namespace VersionApi.Controllers
         }
 
         [HttpGet("SetInformation")]
-        public void SetInformation(string enviroment, string system, string component, string version)
+        public void SetInformation(string enviroment, string system, string component, string version, string status)
         {
             VersionDTO dto = new()
             {
                 Enviroment = enviroment,
                 System = system,
                 Component = component,
-                Version = version
+                Version = version,
+                Status = status
             };
 
             string key = CreateKey(enviroment, system, component);
@@ -111,100 +112,44 @@ namespace VersionApi.Controllers
         {
             Byte[] image = Array.Empty<byte>();
 
-            switch (num)
+            image = num switch
             {
-                case 0:
-                    image = System.IO.File.ReadAllBytes("images/reddot.png");
-                    break;
+                0 => System.IO.File.ReadAllBytes("images/reddot.png"),
+                1 => System.IO.File.ReadAllBytes("images/greendot.png"),
+                2 => System.IO.File.ReadAllBytes("images/yellowdot.png"),
+                3 => System.IO.File.ReadAllBytes("images/orangedot.png"),
+                _ => System.IO.File.ReadAllBytes("images/questionmark.png"),
+            };
 
-                case 1:
-                    image = System.IO.File.ReadAllBytes("images/greendot.png");
-                    break;
+            return File(image, "image/jpeg");
 
-                case 2:
-                    image = System.IO.File.ReadAllBytes("images/yellowdot.png");
-                    break;
-
-                case 3:
-                    image = System.IO.File.ReadAllBytes("images/orangedot.png");
-                    break;
-
-                default:
-                    image = System.IO.File.ReadAllBytes("images/questionmark.png");
-                    break;
-            }
-
-            if (image != null)
-            {
-                return File(image, "image/jpeg");
-            }
-            else
-            {
-                return null;
-            }
         }
 
         [HttpGet("StatusText")]
         public IActionResult StatusText(string text)
         {
             string newtext = text.ToLower();
-            Byte[] image = null;
+            Byte[] image = Array.Empty<byte>();
 
-            switch (newtext)
+            image = newtext switch
             {
-                case "unhealthy":
-                case "error":
-                    image = System.IO.File.ReadAllBytes("images/reddot.png");
-                    break;
+                "unhealthy" or "error" => System.IO.File.ReadAllBytes("images/reddot.png"),
+                "healthy" => System.IO.File.ReadAllBytes("images/greendot.png"),
+                "warning" => System.IO.File.ReadAllBytes("images/yellowdot.png"),
+                "degraded" => System.IO.File.ReadAllBytes("images/orangedot.png"),
+                _ => System.IO.File.ReadAllBytes("images/questionmark.png"),
+            };
 
-                case "healthy":
-                    image = System.IO.File.ReadAllBytes("images/greendot.png");
-                    break;
-
-                case "warning":
-                    image = System.IO.File.ReadAllBytes("images/yellowdot.png");
-                    break;
-
-                case "degraded":
-                    image = System.IO.File.ReadAllBytes("images/orangedot.png");
-                    break;
-
-                default:
-                    image = System.IO.File.ReadAllBytes("images/questionmark.png");
-                    break;
-            }
-
-            if (image.Length > 0)
-            {
-                return File(image, "image/jpeg");
-            }
-            else
-            {
-                return BadRequest();
-            }
-
+            return File(image, "image/jpeg");
         }
 
-
-
-    }
-
-    /// <summary>
-    /// To be used with Badges in Shields.io, ref https://shields.io/endpoint
-    /// </summary>
-    public class ShieldsIo
-    {
-        public int schemaVersion => 1;
-        public string label { get; set; }
-        public string message { get; set; }
-
-        public string color { get; set; } = "lightgrey";
-
-        public ShieldsIo(string label, string message)
+        [HttpGet("HealthStatus")]
+        public IActionResult HealthStatus(Status status)
         {
-            this.label = label;
-            this.message = message;
+            return StatusText(status.OverStatus2);
         }
+
+
     }
 
 }
