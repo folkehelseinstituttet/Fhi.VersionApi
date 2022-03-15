@@ -107,21 +107,28 @@ namespace VersionApi.Controllers
         public IActionResult StatusImage(int num)
         {
             Byte[] image = null;
-            if (num == 0)
+
+            switch (num)
             {
-                image = System.IO.File.ReadAllBytes("images/reddot.png");
-            }
-            if (num == 1)
-            {
-                image = System.IO.File.ReadAllBytes("images/greendot.png");
-            }
-            if (num == 2)
-            {
-                image = System.IO.File.ReadAllBytes("images/yellowdot.png");
-            }
-            if (num == 3)
-            {
-                image = System.IO.File.ReadAllBytes("images/orangedot.png");
+                case 0:
+                    image = System.IO.File.ReadAllBytes("images/reddot.png");
+                    break;
+
+                case 1:
+                    image = System.IO.File.ReadAllBytes("images/greendot.png");
+                    break;
+
+                case 2:
+                    image = System.IO.File.ReadAllBytes("images/yellowdot.png");
+                    break;
+
+                case 3:
+                    image = System.IO.File.ReadAllBytes("images/orangedot.png");
+                    break;
+
+                default:
+                    image = System.IO.File.ReadAllBytes("images/questionmark.png");
+                    break;
             }
 
             if (image != null)
@@ -133,6 +140,50 @@ namespace VersionApi.Controllers
                 return null;
             }
         }
+
+        [HttpGet("StatusText")]
+        public IActionResult StatusText(string text)
+        {
+            string newtext = text.ToLower();
+            Byte[] image = null;
+
+            switch (newtext)
+            {
+                case "unhealthy":
+                case "error":
+                    image = System.IO.File.ReadAllBytes("images/reddot.png");
+                    break;
+
+                case "healthy":
+                    image = System.IO.File.ReadAllBytes("images/greendot.png");
+                    break;
+
+                case "warning":
+                    image = System.IO.File.ReadAllBytes("images/yellowdot.png");
+                    break;
+
+                case "degraded":
+                    image = System.IO.File.ReadAllBytes("images/orangedot.png");
+                    break;
+
+                default:
+                    image = System.IO.File.ReadAllBytes("images/questionmark.png");
+                    break;
+            }
+
+            if (image != null)
+            {
+                return File(image, "image/jpeg");
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+
+
     }
 
     /// <summary>
