@@ -144,9 +144,14 @@ namespace VersionApi.Controllers
         }
 
         [HttpGet("HealthStatus")]
-        public IActionResult HealthStatus(Status status)
+        public async Task<IActionResult> HealthStatus(string url)
         {
-            return StatusText(status.OverStatus2);
+            var client = new HttpClient();
+            var response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            var statusAsString = await response.Content.ReadAsStringAsync();
+            var status = JsonConvert.DeserializeObject<Status>(statusAsString);
+            return StatusText(status?.OverStatus2??"Nothing");
         }
 
 
