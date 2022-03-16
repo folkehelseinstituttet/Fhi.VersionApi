@@ -121,11 +121,11 @@ namespace VersionApi.Controllers
 
             image = num switch
             {
-                0 => System.IO.File.ReadAllBytes("images/reddot.png"),
-                1 => System.IO.File.ReadAllBytes("images/greendot.png"),
-                2 => System.IO.File.ReadAllBytes("images/yellowdot.png"),
-                3 => System.IO.File.ReadAllBytes("images/orangedot.png"),
-                _ => System.IO.File.ReadAllBytes("images/questionmark.png"),
+                0 => System.IO.File.ReadAllBytes("images/reddot3D.png"),
+                1 => System.IO.File.ReadAllBytes("images/greendot3D.png"),
+                2 => System.IO.File.ReadAllBytes("images/yellowdot3D.png"),
+                3 => System.IO.File.ReadAllBytes("images/orangedot3D.png"),
+                _ => System.IO.File.ReadAllBytes("images/question3D.png"),
             };
 
             return File(image, "image/jpeg");
@@ -140,11 +140,11 @@ namespace VersionApi.Controllers
 
             image = newtext switch
             {
-                "unhealthy" or "error" => System.IO.File.ReadAllBytes("images/reddot.png"),
-                "healthy" => System.IO.File.ReadAllBytes("images/greendot.png"),
-                "warning" => System.IO.File.ReadAllBytes("images/yellowdot.png"),
-                "degraded" => System.IO.File.ReadAllBytes("images/orangedot.png"),
-                _ => System.IO.File.ReadAllBytes("images/questionmark.png"),
+                "unhealthy" or "error" => System.IO.File.ReadAllBytes("images/reddot3D.png"),
+                "healthy" => System.IO.File.ReadAllBytes("images/greendot3D.png"),
+                "warning" => System.IO.File.ReadAllBytes("images/yellowdot3D.png"),
+                "degraded" => System.IO.File.ReadAllBytes("images/orangedot3D.png"),
+                _ => System.IO.File.ReadAllBytes("images/question3D.png"),
             };
 
             return File(image, "image/jpeg");
