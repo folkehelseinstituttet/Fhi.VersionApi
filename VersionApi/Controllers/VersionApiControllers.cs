@@ -59,6 +59,13 @@ namespace VersionApi.Controllers
 
         }
 
+        [HttpGet("GetStatus")]
+        public IActionResult GetStatus(string enviroment, string system, string component)
+        {
+            var dtoFound = information.TryGetValue(CreateKey(enviroment, system, component), out var dto);
+            return dtoFound ? Ok(StatusText(dto!.Status)) : Ok(StatusText("NotFound"));
+        }
+
         [HttpGet("SetInformation")]
         public void SetInformation(string enviroment, string system, string component, string version, string status)
         {
@@ -144,9 +151,14 @@ namespace VersionApi.Controllers
         }
 
         [HttpGet("HealthStatus")]
-        public IActionResult HealthStatus(Status status)
+        public async Task<IActionResult> HealthStatus(string url)
         {
-            return StatusText(status.OverStatus2);
+            var client = new HttpClient();
+            var response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            var statusAsString = await response.Content.ReadAsStringAsync();
+            var status = JsonConvert.DeserializeObject<Status>(statusAsString);
+            return StatusText(status?.OverStatus2??"Nothing");
         }
 
 
