@@ -59,6 +59,13 @@ namespace VersionApi.Controllers
 
         }
 
+        [HttpGet("GetStatus")]
+        public IActionResult GetStatus(string enviroment, string system, string component)
+        {
+            var dtoFound = information.TryGetValue(CreateKey(enviroment, system, component), out var dto);
+            return dtoFound ? Ok(StatusText(dto!.Status)) : Ok(StatusText("NotFound"));
+        }
+
         [HttpGet("SetInformation")]
         public void SetInformation(string enviroment, string system, string component, string version, string status)
         {
