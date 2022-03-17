@@ -60,7 +60,7 @@ namespace VersionApi.Controllers
         }
 
         [HttpGet("GetStatus")]
-        public IActionResult GetStatus(string enviroment, string system, string component)
+        public ActionResult GetStatus(string enviroment, string system, string component)
         {
             var dtoFound = information.TryGetValue(CreateKey(enviroment, system, component), out var dto);
             return dtoFound ? Ok(StatusText(dto!.Status)) : Ok(StatusText("NotFound"));
@@ -122,7 +122,7 @@ namespace VersionApi.Controllers
             image = num switch
             {
                 0 => System.IO.File.ReadAllBytes("images/reddot3D.png"),
-                1 => System.IO.File.ReadAllBytes("images/greendot3D.png"),
+                1 => System.IO.File.ReadAllBytes("images/greendot.png"),
                 2 => System.IO.File.ReadAllBytes("images/yellowdot3D.png"),
                 3 => System.IO.File.ReadAllBytes("images/orangedot3D.png"),
                 _ => System.IO.File.ReadAllBytes("images/question3D.png"),
