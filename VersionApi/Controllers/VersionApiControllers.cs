@@ -122,7 +122,7 @@ namespace VersionApi.Controllers
             image = num switch
             {
                 0 => System.IO.File.ReadAllBytes("images/reddot3D.png"),
-                1 => System.IO.File.ReadAllBytes("images/greendot.png"),
+                1 => System.IO.File.ReadAllBytes("images/greendot3D.png"),
                 2 => System.IO.File.ReadAllBytes("images/yellowdot3D.png"),
                 3 => System.IO.File.ReadAllBytes("images/orangedot3D.png"),
                 _ => System.IO.File.ReadAllBytes("images/question3D.png"),
@@ -155,11 +155,14 @@ namespace VersionApi.Controllers
         {
             var client = new HttpClient();
             var response = await client.GetAsync(url);
-            response.EnsureSuccessStatusCode();
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                return StatusText("error");
             var statusAsString = await response.Content.ReadAsStringAsync();
             var status = JsonConvert.DeserializeObject<Status>(statusAsString);
             return StatusText(status?.OverStatus2??"Nothing");
         }
+
+        
 
 
     }
