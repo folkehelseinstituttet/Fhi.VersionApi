@@ -60,7 +60,7 @@ namespace VersionApi.Controllers
         }
 
         [HttpGet("GetStatus")]
-        public IActionResult GetStatus(string enviroment, string system, string component)
+        public ActionResult GetStatus(string enviroment, string system, string component)
         {
             var dtoFound = information.TryGetValue(CreateKey(enviroment, system, component), out var dto);
             return dtoFound ? Ok(StatusText(dto!.Status)) : Ok(StatusText("NotFound"));
@@ -155,11 +155,14 @@ namespace VersionApi.Controllers
         {
             var client = new HttpClient();
             var response = await client.GetAsync(url);
-            response.EnsureSuccessStatusCode();
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                return StatusText("error");
             var statusAsString = await response.Content.ReadAsStringAsync();
             var status = JsonConvert.DeserializeObject<Status>(statusAsString);
             return StatusText(status?.OverStatus2??"Nothing");
         }
+
+        
 
 
     }
