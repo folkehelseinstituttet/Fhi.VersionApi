@@ -67,11 +67,11 @@ namespace VersionApi.Controllers
         }
 
         [HttpGet("SetInformation")]
-        public void SetInformation(string enviroment, string system, string component, string version, string status)
+        public ActionResult SetInformation(string environment, string system, string component, string version, string status)
         {
             VersionDTO dto = new()
             {
-                Enviroment = enviroment,
+                Enviroment = environment,
                 System = system,
                 Component = component,
                 Version = version,
@@ -79,7 +79,7 @@ namespace VersionApi.Controllers
                 Date = DateTime.Now
             };
 
-            string key = CreateKey(enviroment, system, component);
+            string key = CreateKey(environment, system, component);
 
             var dtoFound = information.TryGetValue(key, out var outdto);
             if (!dtoFound)
@@ -92,6 +92,7 @@ namespace VersionApi.Controllers
             }
 
             UploadInformation();
+            return Ok();
         }
 
         [HttpGet("DeleteInformation")]
@@ -107,12 +108,15 @@ namespace VersionApi.Controllers
             {
                 information.Remove($"{system}.{component}");
             }
+
+            UploadInformation();
         }
 
         [HttpGet("DeleteAllInformation")]
         public void DeleteAllInformation()
         {
             information.Clear();
+            UploadInformation();
         }
 
         [HttpGet("Status")]
@@ -149,6 +153,7 @@ namespace VersionApi.Controllers
                 "blue" => System.IO.File.ReadAllBytes("images/bluedot3D.png"),
                 "pink" => System.IO.File.ReadAllBytes("images/pinkdot3D.png"),
                 "turquoise" => System.IO.File.ReadAllBytes("images/turkisdot3D.png"),
+                "crash" => System.IO.File.ReadAllBytes("images/crashdot3D.png"),
                 _ => System.IO.File.ReadAllBytes("images/question3D.png"),
             };
 
@@ -161,10 +166,16 @@ namespace VersionApi.Controllers
             var client = new HttpClient();
             var response = await client.GetAsync(url);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                return StatusText("error");
+                return StatusText("crash");
             var statusAsString = await response.Content.ReadAsStringAsync();
             var status = JsonConvert.DeserializeObject<Status>(statusAsString);
             return StatusText(status?.OverStatus2??"Nothing");
+        }
+
+        [HttpGet("Dump")]
+        public string Dump()
+        {
+            return JsonConvert.SerializeObject(information, Formatting.Indented);
         }
 
         
