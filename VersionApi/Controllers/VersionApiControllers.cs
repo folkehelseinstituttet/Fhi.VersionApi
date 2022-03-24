@@ -75,7 +75,8 @@ namespace VersionApi.Controllers
                 System = system,
                 Component = component,
                 Version = version,
-                Status = status
+                Status = status,
+                Date = DateTime.Now
             };
 
             string key = CreateKey(enviroment, system, component);
@@ -140,10 +141,14 @@ namespace VersionApi.Controllers
 
             image = newtext switch
             {
-                "unhealthy" or "error" => System.IO.File.ReadAllBytes("images/reddot3D.png"),
-                "healthy" => System.IO.File.ReadAllBytes("images/greendot3D.png"),
-                "warning" => System.IO.File.ReadAllBytes("images/yellowdot3D.png"),
-                "degraded" => System.IO.File.ReadAllBytes("images/orangedot3D.png"),
+                "unhealthy" or "error" or "red" => System.IO.File.ReadAllBytes("images/reddot3D.png"),
+                "healthy" or "green" => System.IO.File.ReadAllBytes("images/greendot3D.png"),
+                "warning" or "yellow" => System.IO.File.ReadAllBytes("images/yellowdot3D.png"),
+                "degraded" or "orange" => System.IO.File.ReadAllBytes("images/orangedot3D.png"),
+                "black" => System.IO.File.ReadAllBytes("images/blackdot3D.png"),
+                "blue" => System.IO.File.ReadAllBytes("images/bluedot3D.png"),
+                "pink" => System.IO.File.ReadAllBytes("images/pinkdot3D.png"),
+                "turquoise" => System.IO.File.ReadAllBytes("images/turkisdot3D.png"),
                 _ => System.IO.File.ReadAllBytes("images/question3D.png"),
             };
 
