@@ -138,7 +138,7 @@ namespace VersionApi.Controllers
         }
 
         [HttpGet("StatusText")]
-        public IActionResult StatusText(string? text)
+        public IActionResult StatusText(string text)
         {
             string newtext = text.ToLower();
             Byte[] image = Array.Empty<byte>();
