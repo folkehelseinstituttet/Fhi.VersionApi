@@ -167,9 +167,19 @@ namespace VersionApi.Controllers
             var response = await client.GetAsync(url);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 return StatusText("crash");
+            var statusText = await GetStatusText(response);
+            return StatusText(statusText);
+        }
+
+        private static async Task<string> GetStatusText(HttpResponseMessage response)
+        {
             var statusAsString = await response.Content.ReadAsStringAsync();
-            var status = JsonConvert.DeserializeObject<Status>(statusAsString);
-            return StatusText(status?.OverStatus2??"Nothing");
+            var status = JsonConvert.DeserializeObject<StatusResponse>(statusAsString);
+            if (!string.IsNullOrEmpty(status?.OverStatus2))
+                return status.OverStatus2;
+            if (!string.IsNullOrEmpty(status?.Status))
+                return status.Status;
+            return "Nothing";
         }
 
         [HttpGet("Dump")]
@@ -177,9 +187,6 @@ namespace VersionApi.Controllers
         {
             return JsonConvert.SerializeObject(information, Formatting.Indented);
         }
-
-        
-
 
     }
 
