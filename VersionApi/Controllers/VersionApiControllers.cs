@@ -160,6 +160,17 @@ namespace VersionApi.Controllers
             return File(image, "image/jpeg");
         }
 
+        [HttpGet("StatusTextFromUrl")]
+        public async Task<IActionResult> StatusTextFromUrl(string url)
+        {
+            var client = new HttpClient();
+            var response = await client.GetAsync(url);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                return StatusText("crash");
+            var statusAsString = await response.Content.ReadAsStringAsync();
+            return StatusText(statusAsString);
+        }
+
         [HttpGet("HealthStatus")]
         public async Task<IActionResult> HealthStatus(string url)
         {
