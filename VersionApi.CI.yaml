@@ -1,0 +1,41 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+
+
+pool:
+  vmImage: 'windows-2022'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Debug'
+  
+resources:
+  repositories:
+   - repository: FhiGDDevOps
+     type: git
+     name: Fhi.Grunndata/Fhi.Grunndata.DevOps
+
+stages:
+- stage: 'Build'
+  displayName: 'Bygg applikasjon'
+  jobs: 
+  - job: 'Build'
+    displayName: 'Build job'
+    pool:
+      vmImage: 'windows-2022'
+      
+    steps:
+# BYGGER PROSJEKTET
+    - template: templates/restoreandbuild6gv.yaml@FhiGDDevOps
+
+
+# Utfører unittester
+    - template: templates/unittests.yaml@FhiGDDevOps
+
+
+
+    
