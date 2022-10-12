@@ -36,7 +36,7 @@ namespace VersionApi.Controllers
         private string CreateKey(string enviroment, string system, string component) => $"{enviroment}.{system}.{component}";
 
 
-        public void UploadInformation()
+        private void UploadInformation()
         {
             var jsonString = JsonConvert.SerializeObject(information, Formatting.Indented);
             System.IO.File.WriteAllText(path, jsonString);
@@ -47,15 +47,9 @@ namespace VersionApi.Controllers
         {
             var dtoFound = information.TryGetValue(CreateKey(enviroment, system, component), out var dto);
 
-            if (dtoFound == false)
-            {
-                return Ok(new ShieldsIo("Version", "Not Found"));
-            }
-            else
-            {
-                return Ok(new ShieldsIo("Version", dto!.Version));
-            }
-
+            return Ok(dtoFound == false 
+                ? new ShieldsIo("Version", "Not Found")
+                : new ShieldsIo("Version", dto!.Version));
         }
 
         [HttpGet("GetStatus")]
