@@ -1,0 +1,102 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+  main
+
+pool:
+  vmImage: 'windows-2022'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Debug'
+  prosjektnavn : 'VersionApi'
+  prosjektkatalog : 'VersionApi'
+  appname : 'Fhi.VersionApi'
+  
+resources:
+  repositories:
+   - repository: FhiGDDevOps
+     type: git
+     name: Fhi.Grunndata/Fhi.Grunndata.DevOps
+
+stages:
+- stage: 'Build'
+  displayName: 'Bygg applikasjon'
+  jobs: 
+  - job: 'Build'
+    displayName: 'Build job'
+    pool:
+      vmImage: 'windows-2022'
+      
+    steps:
+    - checkout: self
+      persistCredentials: true
+      fetchDepth: 0
+
+# BYGGER PROSJEKTET
+    - template: templates/restoreandbuild6gv.yaml@FhiGDDevOps
+
+
+# Utfører unittester
+    - template: templates/unittests.yaml@FhiGDDevOps
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Publisere kode $(prosjektnavn)'
+      inputs:
+        command: 'publish'
+        publishWebProjects: false    
+        projects: '$(Build.SourcesDirectory)/$(prosjektkatalog)/$(prosjektnavn).csproj'
+        arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'        
+        zipAfterPublish: true
+
+    - publish: '$(Build.ArtifactStagingDirectory)'
+      artifact: drop
+      displayName: 'Publisere artifact $(prosjektnavn)'
+
+    - script: |
+        echo "Ready to tag Verion ${GitVersionVar.GitVersionVal} in Build"
+        git config --global user.name "BuildService"
+        git config --global user.email "buildservice@fhi.no"
+        git tag $(GitVersionVar.GitVersionVal)
+        git push origin $(GitVersionVar.GitVersionVal)
+
+
+- stage: 'Publish'
+  displayName: 'Deploy til Azure'
+  dependsOn: Build
+  variables:
+    GitVersion: $[dependencies.Build.Build.outputs['GitVersionVar.GitVersionVal']]
+  condition: succeeded()    
+  jobs:
+    - deployment: Deploy
+      displayName: 'Deploy $(GitVersion)'
+      pool:
+          vmImage: 'windows-2022'
+      environment: azure      
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - download: current
+              artifact: drop
+            - task: AzureWebApp@1
+              displayName: 'Azure App Service Deploy: website'
+              inputs:
+                azureSubscription: 'FHI-Utvikling'
+                appName: '$(appname)'
+                slotName: 'production'
+                package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
+            - task: AzureWebApp@1
+              displayName: 'Azure App Service Deploy: website'
+              inputs:
+                azureSubscription: 'FHI-Utvikling'
+                appName: '$(appname)'
+                slotName: 'azurefilestore'
+                package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
+
+
+    
