@@ -1,0 +1,11 @@
+<publishData>
+  <publishProfile profileName="VersionApi-Felles-Fhi - Web Deploy" publishMethod="MSDeploy" publishUrl="versionapi-felles-fhi.scm.azurewebsites.net:443" msdeploySite="VersionApi-Felles-Fhi" userName="$VersionApi-Felles-Fhi" userPWD="puEl5Bn3X9rjzdqweEaKK0KaDM5icrt5fDbZcrpBxwudT4688GN4C5berAyz" destinationAppUrl="https://versionapi-felles-fhi.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com" webSystem="WebSites">
+    <databases />
+  </publishProfile>
+  <publishProfile profileName="VersionApi-Felles-Fhi - FTP" publishMethod="FTP" publishUrl="ftps://waws-prod-db3-251.ftp.azurewebsites.windows.net/site/wwwroot" ftpPassiveMode="True" userName="VersionApi-Felles-Fhi\$VersionApi-Felles-Fhi" userPWD="puEl5Bn3X9rjzdqweEaKK0KaDM5icrt5fDbZcrpBxwudT4688GN4C5berAyz" destinationAppUrl="https://versionapi-felles-fhi.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com" webSystem="WebSites">
+    <databases />
+  </publishProfile>
+  <publishProfile profileName="VersionApi-Felles-Fhi - Zip Deploy" publishMethod="ZipDeploy" publishUrl="versionapi-felles-fhi.scm.azurewebsites.net:443" userName="$VersionApi-Felles-Fhi" userPWD="puEl5Bn3X9rjzdqweEaKK0KaDM5icrt5fDbZcrpBxwudT4688GN4C5berAyz" destinationAppUrl="https://versionapi-felles-fhi.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com" webSystem="WebSites">
+    <databases />
+  </publishProfile>
+</publishData>

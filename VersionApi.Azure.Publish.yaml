@@ -15,7 +15,7 @@ variables:
   buildConfiguration: 'Debug'
   prosjektnavn : 'VersionApi'
   prosjektkatalog : 'VersionApi'
-  appname : 'Fhi.VersionApi'
+  appname : 'VersionApi-Felles-Fhi'
   
 resources:
   repositories:
