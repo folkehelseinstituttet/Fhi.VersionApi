@@ -26,7 +26,7 @@ namespace VersionApi.Controllers
 
             }
 
-            string allText = System.IO.File.ReadAllText(path);
+            var allText = System.IO.File.ReadAllText(path);
             var versionApiDict = JsonConvert.DeserializeObject<Dictionary<string, VersionDTO>>(allText);
 
             return versionApiDict!;
@@ -36,10 +36,9 @@ namespace VersionApi.Controllers
         private string CreateKey(string enviroment, string system, string component) => $"{enviroment}.{system}.{component}";
 
 
-        [HttpGet("UploadInformation")]
         public void UploadInformation()
         {
-            string jsonString = JsonConvert.SerializeObject(information, Formatting.Indented);
+            var jsonString = JsonConvert.SerializeObject(information, Formatting.Indented);
             System.IO.File.WriteAllText(path, jsonString);
         }
 
@@ -79,7 +78,7 @@ namespace VersionApi.Controllers
                 Date = DateTime.Now
             };
 
-            string key = CreateKey(environment, system, component);
+            var key = CreateKey(environment, system, component);
 
             var dtoFound = information.TryGetValue(key, out var outdto);
             if (!dtoFound)
@@ -104,10 +103,8 @@ namespace VersionApi.Controllers
             {
                 return;
             }
-            else
-            {
-                information.Remove($"{system}.{component}");
-            }
+
+            information.Remove($"{system}.{component}");
 
             UploadInformation();
         }
@@ -122,7 +119,7 @@ namespace VersionApi.Controllers
         [HttpGet("Status")]
         public IActionResult StatusImage(int num)
         {
-            Byte[] image = Array.Empty<byte>();
+            var image = Array.Empty<byte>();
 
             image = num switch
             {
@@ -138,12 +135,12 @@ namespace VersionApi.Controllers
         }
 
         [HttpGet("StatusText")]
+        [Produces("image/jpeg")]
         public IActionResult StatusText(string text)
         {
-            string newtext = text.ToLower();
-            Byte[] image = Array.Empty<byte>();
+            var newtext = text.ToLower();
 
-            image = newtext switch
+            var image = newtext switch
             {
                 "unhealthy" or "error" or "red" => System.IO.File.ReadAllBytes("images/reddot3D.png"),
                 "healthy" or "green" => System.IO.File.ReadAllBytes("images/greendot3D.png"),
@@ -160,7 +157,20 @@ namespace VersionApi.Controllers
             return File(image, "image/jpeg");
         }
 
+        [HttpGet("StatusTextFromUrl")]
+        [Produces("image/jpeg")]
+        public async Task<IActionResult> StatusTextFromUrl(string url)
+        {
+            var client = new HttpClient();
+            var response = await client.GetAsync(url);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                return StatusText("crash");
+            var statusAsString = await response.Content.ReadAsStringAsync();
+            return StatusText(statusAsString);
+        }
+
         [HttpGet("HealthStatus")]
+        [Produces("image/jpeg")]
         public async Task<IActionResult> HealthStatus(string url)
         {
             var client = new HttpClient();
