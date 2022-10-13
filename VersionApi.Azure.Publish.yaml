@@ -90,13 +90,13 @@ stages:
                 appName: '$(appname)'
                 slotName: 'production'
                 package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
-            - task: AzureWebApp@1
-              displayName: 'Azure App Service Deploy: website'
-              inputs:
-                azureSubscription: 'FHI-Utvikling'
-                appName: '$(appname)'
-                slotName: 'azurefilestore'
-                package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
+            #- task: AzureWebApp@1
+            #  displayName: 'Azure App Service Deploy: website'
+            #  inputs:
+            #    azureSubscription: 'FHI-Utvikling'
+            #    appName: '$(appname)'
+            #    slotName: 'azurefilestore'
+            #    package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
 
 
     
