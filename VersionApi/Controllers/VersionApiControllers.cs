@@ -178,12 +178,18 @@ namespace VersionApi.Controllers
         private static async Task<string> GetStatusText(HttpResponseMessage response)
         {
             var statusAsString = await response.Content.ReadAsStringAsync();
-            var status = JsonConvert.DeserializeObject<StatusResponse>(statusAsString);
-            if (!string.IsNullOrEmpty(status?.OverStatus2))
+            StatusResponse status;
+            try
+            {
+                status = JsonConvert.DeserializeObject<StatusResponse>(statusAsString)??new StatusResponse { Status=statusAsString};
+            }
+            catch (JsonReaderException)
+            {
+                status = new StatusResponse { Status = statusAsString };
+            }
+            if (!string.IsNullOrEmpty(status.OverStatus2))
                 return status.OverStatus2;
-            if (!string.IsNullOrEmpty(status?.Status))
-                return status.Status;
-            return "Nothing";
+            return !string.IsNullOrEmpty(status.Status) ? status.Status : "Nothing";
         }
 
         [HttpGet("Dump")]
