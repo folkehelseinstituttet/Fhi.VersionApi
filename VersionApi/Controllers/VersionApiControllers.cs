@@ -53,10 +53,11 @@ namespace VersionApi.Controllers
         }
 
         [HttpGet("GetStatus")]
-        public ActionResult GetStatus(string enviroment, string system, string component)
+        [Produces("image/jpeg")]
+        public IActionResult GetStatus(string enviroment, string system, string component)
         {
             var dtoFound = information.TryGetValue(CreateKey(enviroment, system, component), out var dto);
-            return dtoFound ? Ok(StatusText(dto!.Status)) : Ok(StatusText("NotFound"));
+            return dtoFound ? StatusText(dto!.Status) : StatusText("NotFound");
         }
 
         [HttpGet("SetInformation")]
