@@ -49,7 +49,9 @@ namespace VersionApi.Controllers
                         var image = await System.IO.File.ReadAllBytesAsync("images/icons8-pull-request-30.png");
                         return File(image, "image/png");
                     }
-                    return Ok();
+
+                    var noimage = Array.Empty<byte>();
+                    return File(noimage,"image/png");
                 }
                 return BadRequest($"JsonDeserializer returned nada from {content}");
             }
