@@ -50,8 +50,7 @@ namespace VersionApi.Controllers
                         return File(image, "image/png");
                     }
 
-                    var noimage = Array.Empty<byte>();
-                    return File(noimage,"image/png");
+                    return File(EmptyImage,"image/png");
                 }
                 return BadRequest($"JsonDeserializer returned nada from {content}");
             }
@@ -61,6 +60,12 @@ namespace VersionApi.Controllers
             }
 
         }
+
+        private static readonly byte[] EmptyImage = new byte[]
+        {
+            0x47, 0x49, 0x46, 0x38, 0x37, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80, 0x01, 0x00, 0xFF, 0xFF, 0xFF, 0x00,
+            0x00, 0x00, 0x2C, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44, 0x01
+        };
     }
 
 
