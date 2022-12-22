@@ -10,8 +10,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D7E11048-5F63-41EE-8C74-71B7B52A8823}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		VersionApi.Azure.Publish.yaml = VersionApi.Azure.Publish.yaml
 		AzurePublish.xml = AzurePublish.xml
+		gitversion.yml = gitversion.yml
+		VersionApi.Azure.Publish.yaml = VersionApi.Azure.Publish.yaml
 		VersionApi.CI.yaml = VersionApi.CI.yaml
 	EndProjectSection
 EndProject
