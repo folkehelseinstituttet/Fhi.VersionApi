@@ -12,10 +12,6 @@ namespace VersionApi.Controllers
     {
         private const string personalaccesstoken = "mg64neqhjf2dvcbgr4qpqddskgefk2artydxi6rjjchpxp4dx2la";
 
-
-
-
-
         /// <summary>
         /// Returns a PR image if there are any PRs in the repo, blank otherwise
         /// </summary>
@@ -27,6 +23,40 @@ namespace VersionApi.Controllers
         public async Task<IActionResult> PullRequestsStatus(string repoUrl, string repositoryId)
         {
             var url = $"{repoUrl}/_apis/git/repositories/{repositoryId}/pullrequests?api-version=7.0";
+            var res = await CallApi<PrResponse>(url, async response =>
+            {
+                if (response.Count <= 0)
+                {
+                    return File(EmptyImage, "image/png");
+                }
+                var image = await System.IO.File.ReadAllBytesAsync("images/icons8-pull-request-30.png");
+                return File(image, "image/png");
+            });
+            return res;
+        }
+
+        private async Task<ActionResult> CallApi<T>(string url, Func<T, Task<ActionResult>> func)
+        {
+            var client = CreateHttpClient();
+            var response = await client.GetAsync(url);
+            var content = await response.Content.ReadAsStringAsync();
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                return BadRequest($"Http request failed {response.StatusCode}, Content: {content}");
+            try
+            {
+                var resp = JsonConvert.DeserializeObject<T>(content);
+                return resp == null 
+                    ? BadRequest($"JsonDeserializer returned nada from {content}") 
+                    : await func(resp);
+            }
+            catch (JsonReaderException)
+            {
+                return BadRequest("Json deserializer crashed");
+            }
+        }
+
+        private static HttpClient CreateHttpClient()
+        {
             var client = new HttpClient();
 
             client.DefaultRequestHeaders.Accept.Add(
@@ -34,31 +64,7 @@ namespace VersionApi.Controllers
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                 Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(string.Format("{0}:{1}", "", personalaccesstoken))));
-
-            var response = await client.GetAsync(url);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                return BadRequest($"Http request failed {response.StatusCode}");
-            var content = await response.Content.ReadAsStringAsync();
-            try
-            {
-                var resp = JsonConvert.DeserializeObject<PrResponse>(content);
-                if (resp != null)
-                {
-                    if (resp.Count > 0)
-                    {
-                        var image = await System.IO.File.ReadAllBytesAsync("images/icons8-pull-request-30.png");
-                        return File(image, "image/png");
-                    }
-
-                    return File(EmptyImage,"image/png");
-                }
-                return BadRequest($"JsonDeserializer returned nada from {content}");
-            }
-            catch (JsonReaderException)
-            {
-                return BadRequest("Json deserializer crashed");
-            }
-
+            return client;
         }
 
         private static readonly byte[] EmptyImage = new byte[]
