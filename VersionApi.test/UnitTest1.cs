@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using VersionApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 

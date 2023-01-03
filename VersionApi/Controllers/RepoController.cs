@@ -16,14 +16,14 @@ namespace VersionApi.Controllers
         /// <summary>
         /// Returns a PR image if there are any PRs in the repo, blank otherwise
         /// </summary>
-        /// <param name="repoUrl">Url including team project, like https://dev.azure.com/{organization}/{project}</param>
+        /// <param name="prjUrl">Url including team project, like https://dev.azure.com/{organization}/{project}</param>
         /// <param name="repositoryId">ID for repository. Kan hentes ut med Azure CLI, az repos list</param>
-        /// <returns></returns>
+        /// <returns>an image</returns>
         [HttpGet("PR")]
         [Produces("image/png")]
-        public async Task<IActionResult> PullRequestsStatus(string repoUrl, string repositoryId)
+        public async Task<IActionResult> PullRequestsStatus(string prjUrl, string repositoryId)
         {
-            var url = $"{repoUrl}/_apis/git/repositories/{repositoryId}/pullrequests?api-version=7.0";
+            var url = $"{prjUrl}/_apis/git/repositories/{repositoryId}/pullrequests?api-version=7.0";
             var res = await CallApi<PrResponse>(url, async response =>
             {
                 if (response.Count <= 0)
@@ -36,6 +36,28 @@ namespace VersionApi.Controllers
             return res;
         }
 
+        /// <summary>
+        /// Returns the latest version number from the code tags
+        /// </summary>
+        /// <param name="prjUrl">Url including team project, like https://dev.azure.com/{organization}/{project}</param>
+        /// <param name="repositoryId">ID for repository. Kan hentes ut med Azure CLI, az repos list</param>
+        /// <returns>a text with version number</returns>
+        [HttpGet("CodeVersion")]
+        public async Task<IActionResult> CodeVersion(string prjUrl, string repositoryId)
+        {
+            // https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/refs?filter=tags/&api-version=6.0-preview.1
+            var tags = $"{prjUrl}/_apis/git/repositories/{repositoryId}/refs?filter=tags/&api-version=6.0-preview.1";
+            var res = await CallApi<CodeVersionResponse>(tags, async response =>
+            {
+                var versions = response.Value;
+                var latest = versions.Max(o => o.GetVersion());
+                return latest == null ? Ok("No tags found") : Ok(latest);
+            });
+            return res;
+        }
+
+
+
         private async Task<ActionResult> CallApi<T>(string url, Func<T, Task<ActionResult>> func)
         {
             var client = CreateHttpClient();
@@ -46,8 +68,8 @@ namespace VersionApi.Controllers
             try
             {
                 var resp = JsonConvert.DeserializeObject<T>(content);
-                return resp == null 
-                    ? BadRequest($"JsonDeserializer returned nada from {content}") 
+                return resp == null
+                    ? BadRequest($"JsonDeserializer returned nada from {content}")
                     : await func(resp);
             }
             catch (JsonReaderException)
@@ -68,11 +90,54 @@ namespace VersionApi.Controllers
             return client;
         }
 
-        private static readonly byte[] EmptyImage = new byte[]
-        {
+        private static readonly byte[] EmptyImage = {
             0x47, 0x49, 0x46, 0x38, 0x37, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80, 0x01, 0x00, 0xFF, 0xFF, 0xFF, 0x00,
             0x00, 0x00, 0x2C, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44, 0x01
         };
+    }
+
+    public class CodeVersionResponse
+    {
+        public List<CodeVersion> Value { get; set; }
+        public int Count { get; set; }
+    }
+
+    public class CodeVersion
+    {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable IDE1006 // Naming Styles
+        // ReSharper disable once InconsistentNaming
+        public string name { get; set; } = "";// like "refs/tags/0.1.10-20201204"
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+        public string TagString
+        {
+            get
+            {
+                var s = name.Replace("refs/tags/", "");
+                if (s.Contains("-"))
+                    s = s.Substring(0, s.LastIndexOf("-"));
+                return s;
+            }
+        }
+
+        public Version GetVersion()
+        {
+            var tagString = TagString;
+            var versionSplit = tagString.Split('.');
+            if (versionSplit.Length != 3)
+                return new Version(0, 0, 0); // Not a valid version tag, so we skip this
+            try
+            {
+                var version = new Version(int.Parse(versionSplit[0]), int.Parse(versionSplit[1]), int.Parse(versionSplit[2]));
+                return version;
+            }
+            catch (Exception)
+            {
+                return new Version(0, 0, 0); // Not a valid version tag, so we skip this
+            }
+        }
     }
 
 
@@ -82,4 +147,6 @@ namespace VersionApi.Controllers
     {
         public int Count { get; set; }
     }
+
+
 }
