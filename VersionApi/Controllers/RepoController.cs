@@ -43,6 +43,7 @@ namespace VersionApi.Controllers
         /// <param name="repositoryId">ID for repository. Kan hentes ut med Azure CLI, az repos list</param>
         /// <returns>a text with version number</returns>
         [HttpGet("CodeVersion")]
+        [Produces("image/svg+xml")]
         public async Task<IActionResult> CodeVersion(string prjUrl, string repositoryId)
         {
             // https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/refs?filter=tags/&api-version=6.0-preview.1
@@ -55,7 +56,7 @@ namespace VersionApi.Controllers
                 var httpclient = new HttpClient();
                 var image = await httpclient.GetAsync(url);
                 var content = await image.Content.ReadAsStringAsync();
-                return Ok(content);
+                return Content(content, "image/svg+xml");
             });
             return res;
         }
