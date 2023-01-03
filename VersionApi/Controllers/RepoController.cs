@@ -43,7 +43,7 @@ namespace VersionApi.Controllers
         /// <param name="repositoryId">ID for repository. Kan hentes ut med Azure CLI, az repos list</param>
         /// <returns>a text with version number</returns>
         [HttpGet("CodeVersion")]
-        public async Task<ActionResult<ShieldsIo>> CodeVersion(string prjUrl, string repositoryId)
+        public async Task<ActionResult<string>> CodeVersion(string prjUrl, string repositoryId)
         {
             // https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/refs?filter=tags/&api-version=6.0-preview.1
             var tags = $"{prjUrl}/_apis/git/repositories/{repositoryId}/refs?filter=tags/&api-version=6.0-preview.1";
@@ -51,8 +51,8 @@ namespace VersionApi.Controllers
             {
                 var versions = response.Value;
                 var latest = versions.Max(o => o.GetVersion());
-                return latest == null ? Ok(new ShieldsIo("Tag","No version")) :
-                 Ok(new ShieldsIo("Tag",latest.ToString()));
+                var url = $"https://img.shields.io/badge/Tag-{latest?.ToString()}-lightgrey";
+                return Ok(url);
             });
             return res;
         }
