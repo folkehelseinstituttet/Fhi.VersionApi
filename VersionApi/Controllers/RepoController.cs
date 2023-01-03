@@ -10,7 +10,8 @@ namespace VersionApi.Controllers
     [Route("api")]
     public class RepoController : Controller
     {
-        private const string personalaccesstoken = "mg64neqhjf2dvcbgr4qpqddskgefk2artydxi6rjjchpxp4dx2la";
+        // Add this from an appropriate account on Azure with access to the organization.
+        private const string personalaccesstoken = "xa56o6aujrixropq4n74ehiwhh4xfqqrjd32qxtf3oq4lgfp6h2a";
 
         /// <summary>
         /// Returns a PR image if there are any PRs in the repo, blank otherwise
