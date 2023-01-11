@@ -20,7 +20,7 @@ namespace VersionApi.Controllers
         /// <param name="repositoryId">ID for repository. Kan hentes ut med Azure CLI, az repos list</param>
         /// <returns>an image</returns>
         [HttpGet("PR")]
-        [Produces("image/png")]
+      //  [Produces("image/png")]
         public async Task<IActionResult> PullRequestsStatus(string prjUrl, string repositoryId)
         {
             var url = $"{prjUrl}/_apis/git/repositories/{repositoryId}/pullrequests?api-version=7.0";
@@ -43,7 +43,7 @@ namespace VersionApi.Controllers
         /// <param name="repositoryId">ID for repository. Kan hentes ut med Azure CLI, az repos list</param>
         /// <returns>a text with version number</returns>
         [HttpGet("CodeVersion")]
-        [Produces("image/svg+xml")]
+       // [Produces("image/svg+xml")]
         public async Task<IActionResult> CodeVersion(string prjUrl, string repositoryId)
         {
             // https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/refs?filter=tags/&api-version=6.0-preview.1
