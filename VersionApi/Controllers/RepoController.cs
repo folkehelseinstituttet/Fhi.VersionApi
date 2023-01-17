@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 using Newtonsoft.Json;
 
@@ -10,9 +11,12 @@ namespace VersionApi.Controllers
     [Route("api")]
     public class RepoController : Controller
     {
-        // Add this from an appropriate account on Azure with access to the organization.
-        private const string personalaccesstoken = "m72esxbma6t2rgvohe7fguonvmpmx7r22m4ftmcskvqjzr3odxwa";
-
+        private string Pat { get;  }
+        public RepoController(IOptions<AzureDevopsAccess> adoAccess)
+        {
+            Pat = adoAccess.Value.Pat;
+        }
+        
         /// <summary>
         /// Returns a PR image if there are any PRs in the repo, blank otherwise
         /// </summary>
@@ -85,7 +89,7 @@ namespace VersionApi.Controllers
             }
         }
 
-        private static HttpClient CreateHttpClient()
+        private HttpClient CreateHttpClient()
         {
             var client = new HttpClient();
 
@@ -93,7 +97,7 @@ namespace VersionApi.Controllers
                 new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
-                Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(string.Format("{0}:{1}", "", personalaccesstoken))));
+                Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(string.Format("{0}:{1}", "", Pat))));
             return client;
         }
 

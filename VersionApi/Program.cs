@@ -22,6 +22,9 @@ builder.Services.AddSwaggerGen(c =>
     c.IncludeXmlComments(xmlPath);
 });
 
+var adoSection = builder.Configuration.GetSection(nameof(AzureDevopsAccess));
+builder.Services.Configure<AzureDevopsAccess>(adoSection);
+
 
 var app = builder.Build();
 
@@ -40,3 +43,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
+public class AzureDevopsAccess
+{
+    public string Pat { get; set; } = "";
+}
