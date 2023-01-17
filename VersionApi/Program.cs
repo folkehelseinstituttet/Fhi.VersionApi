@@ -22,9 +22,8 @@ builder.Services.AddSwaggerGen(c =>
     c.IncludeXmlComments(xmlPath);
 });
 
-var adoSection = builder.Configuration.GetSection(nameof(AzureDevopsAccess));
-builder.Services.Configure<AzureDevopsAccess>(adoSection);
-
+var pat = builder.Configuration["Pat"];
+builder.Services.Configure<AzureDevopsAccess>(options => options.Pat = pat);
 
 var app = builder.Build();
 
