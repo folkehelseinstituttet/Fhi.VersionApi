@@ -91,6 +91,8 @@ namespace VersionApi.Controllers
 
         private HttpClient CreateHttpClient()
         {
+            if (Pat.Length == 0)
+                throw new Exception("Pat is empty");
             var client = new HttpClient();
 
             client.DefaultRequestHeaders.Accept.Add(
