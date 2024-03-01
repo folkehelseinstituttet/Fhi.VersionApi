@@ -31,9 +31,10 @@ public class CodeVersionTagTest
             new() { name = "refs/tags/1.3.98" },
         };
         var actual = sut.Max(o => o.GetVersion());
+        Assert.That(actual, Is.Not.Null);
         Assert.Multiple(() =>
         {
-            Assert.That(actual.Major, Is.EqualTo(1));
+            Assert.That(actual!.Major, Is.EqualTo(1));
             Assert.That(actual.Minor, Is.EqualTo(3));
             Assert.That(actual.Build, Is.EqualTo(99));
         });
