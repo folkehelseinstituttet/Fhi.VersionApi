@@ -21,7 +21,7 @@ public class VersionApiControllerTest
 
         ShieldsIo expectedShield = new ShieldsIo("Version", "1.0.1");
 
-        Assert.NotNull(actualShield);
+        Assert.That(actualShield,Is.Not.Null);
         Assert.That(actualShield!.label, Is.EqualTo(expectedShield.label));
         Assert.That(actualShield.message, Is.EqualTo(expectedShield.message));
 
