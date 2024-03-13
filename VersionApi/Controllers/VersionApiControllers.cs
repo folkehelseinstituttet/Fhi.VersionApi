@@ -111,6 +111,12 @@ namespace VersionApi.Controllers
             UploadInformation();
         }
 
+        /// <summary>
+        /// Returns a round status image based on the number parameter, which can be 0-3.
+        /// 0 = Red, 1 = Green, 2 = Yellow, 3 = Orange, anything else = Question mark
+        /// </summary>
+        /// <param name="num">0-3</param>
+        /// <returns>Round 3D png image</returns>
         [HttpGet("Status")]
         public IActionResult StatusImage(int num)
         {
@@ -129,6 +135,18 @@ namespace VersionApi.Controllers
 
         }
 
+        /// <summary>
+        /// Returns a round status image based on the text parameter
+        /// "unhealthy" or "error" or "red" => Red
+        /// "healthy" or "green" => Green
+        /// "warning" or "yellow" => Yellow
+        /// "degraded" or "orange"
+        /// "black", "blue", "pink", "turquoise" => Black, Blue, Pink, Turquoise
+        /// "crash" => No entry symbol
+        /// Anything else returns a question mark image
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns>Round 3D png image</returns>
         [HttpGet("StatusText")]
         [Produces("image/jpeg")]
         public IActionResult StatusText(string text)
