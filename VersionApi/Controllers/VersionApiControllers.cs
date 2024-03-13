@@ -18,7 +18,8 @@ namespace VersionApi.Controllers
         private static Dictionary<string, VersionDTO> ReadDictonary()
         {
             const string filename = "versionApiFile.json";
-            var folder = Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData);
+            //var folder = Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData);
+            var folder = @"\\versionapi.file.core.windows.net\versionapi";
             path = Path.Combine(folder, filename);
             if (!System.IO.File.Exists(path))
             {
