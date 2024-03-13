@@ -7,19 +7,19 @@ namespace VersionApi.Controllers
     [Route("api")]
     public class VersionApiControllers : ControllerBase
     {
-        static readonly Dictionary<string, VersionDTO> information;
+        static readonly Dictionary<string, VersionDTO> Information;
         private static string path = "";
 
         static VersionApiControllers()
         {
-            information = ReadDictonary();
+            Information = ReadDictonary();
         }
 
         private static Dictionary<string, VersionDTO> ReadDictonary()
         {
             const string filename = "versionApiFile.json";
-            //var folder = Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData);
-            var folder = @"\\versionapi.file.core.windows.net\versionapi";
+            var folder = Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData);
+            // var folder = @"\\versionapi.file.core.windows.net\versionapi";  // Require setting up permissions for Azure File Storage
             path = Path.Combine(folder, filename);
             if (!System.IO.File.Exists(path))
             {
@@ -39,14 +39,14 @@ namespace VersionApi.Controllers
 
         private void UploadInformation()
         {
-            var jsonString = JsonConvert.SerializeObject(information, Formatting.Indented);
+            var jsonString = JsonConvert.SerializeObject(Information, Formatting.Indented);
             System.IO.File.WriteAllText(path, jsonString);
         }
 
         [HttpGet("GetInformation")]
         public ActionResult<ShieldsIo> GetInformation(string enviroment, string system, string component)
         {
-            var dtoFound = information.TryGetValue(CreateKey(enviroment, system, component), out var dto);
+            var dtoFound = Information.TryGetValue(CreateKey(enviroment, system, component), out var dto);
 
             return Ok(dtoFound == false 
                 ? new ShieldsIo("Version", "Not Found")
@@ -57,7 +57,7 @@ namespace VersionApi.Controllers
         [Produces("image/jpeg")]
         public IActionResult GetStatus(string enviroment, string system, string component)
         {
-            var dtoFound = information.TryGetValue(CreateKey(enviroment, system, component), out var dto);
+            var dtoFound = Information.TryGetValue(CreateKey(enviroment, system, component), out var dto);
             return dtoFound ? StatusText(dto!.Status) : StatusText("NotFound");
         }
 
@@ -76,14 +76,14 @@ namespace VersionApi.Controllers
 
             var key = CreateKey(environment, system, component);
 
-            var dtoFound = information.TryGetValue(key, out var outdto);
+            var dtoFound = Information.TryGetValue(key, out var outdto);
             if (!dtoFound)
             {
-                information.Add(key, dto);
+                Information.Add(key, dto);
             }
             else
             {
-                information[key] = dto;
+                Information[key] = dto;
             }
 
             UploadInformation();
@@ -93,14 +93,14 @@ namespace VersionApi.Controllers
         [HttpGet("DeleteInformation")]
         public void DeleteInformation(string system, string component)
         {
-            var dtoFound = information.TryGetValue($"{system}.{component}", out var dto);
+            var dtoFound = Information.TryGetValue($"{system}.{component}", out var dto);
 
             if (dtoFound == false)
             {
                 return;
             }
 
-            information.Remove($"{system}.{component}");
+            Information.Remove($"{system}.{component}");
 
             UploadInformation();
         }
@@ -108,7 +108,7 @@ namespace VersionApi.Controllers
         [HttpGet("DeleteAllInformation")]
         public void DeleteAllInformation()
         {
-            information.Clear();
+            Information.Clear();
             UploadInformation();
         }
 
@@ -215,7 +215,7 @@ namespace VersionApi.Controllers
         [HttpGet("Dump")]
         public string Dump()
         {
-            return JsonConvert.SerializeObject(information, Formatting.Indented);
+            return JsonConvert.SerializeObject(Information, Formatting.Indented);
         }
 
     }
