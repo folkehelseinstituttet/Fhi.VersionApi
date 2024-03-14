@@ -49,7 +49,7 @@ namespace VersionApi.Controllers
             var dtoFound = Information.TryGetValue(CreateKey(enviroment, system, component), out var dto);
 
             return Ok(dtoFound == false 
-                ? new ShieldsIo("Version", "Not Found")
+                ? new ShieldsIo("Version", $"Not Found ({enviroment}-{system}-{component})")
                 : new ShieldsIo("Version", dto!.Version));
         }
 
