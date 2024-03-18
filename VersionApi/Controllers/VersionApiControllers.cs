@@ -87,7 +87,7 @@ namespace VersionApi.Controllers
             }
 
             UploadInformation();
-            return Ok();
+            return Ok(dtoFound?"Updated existing":"Added new");
         }
 
         [HttpGet("DeleteInformation")]
